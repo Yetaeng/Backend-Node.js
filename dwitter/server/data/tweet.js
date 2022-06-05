@@ -1,42 +1,45 @@
+import * as userRepository from './auth.js'
+
 let tweets = [{
         tid: '1',
-        uid: 'kim',
-        name: 'kim',
-        text: "kim's tweet",
-        createdAT: new Date(),
-    },
-    {
-        tid: '2',
-        uid: 'lee',
-        name: 'lee',
-        text: "lee's tweet",
+        uid: '1',
+        text: "yetaeng's tweet",
         createdAT: new Date(),
     }
 ]
 
 export async function getAllTweets() {
-    return tweets;
+    return Promise.all(tweets.map(async (tweet) => {
+        const { username, name, url } = await userRepository.findUserById(tweet.uid);
+        return {...tweet, username, name, url}
+    }))
 }
 
 export async function getAllTweetsByUsername(name) {
-    return tweets.filter(tweet => tweet.name === name);
+    return getAllTweets()
+    .then((tweets) => tweets.filter(tweet => tweet.name === name));
 }
 
 export async function getTweetById(id) {
-    return tweets.find(tweet => tweet.tid === id);
+    const found = tweets.find(tweet => tweet.tid === id);
+    if (!found) {
+        return null;
+    }
+    const { username, name, url } = await userRepository.findUserById(found.uid);
+
+    return {...found, username, name, url}
 }
 
-export async function createTweet(uid, name, text) {
+export async function createTweet(uid, text) {
     const tweet = {
         tid: tweets.length + 1,
         uid: uid,
-        name: name,
         text: text,
         createdAT: new Date(),
     }
     tweets = [tweet, ...tweets];
 
-    return tweet;
+    return getTweetById(tweet.tid);
 }
 
 export async function updateTweet(id, text) {
@@ -46,7 +49,7 @@ export async function updateTweet(id, text) {
     if (tweet) {
         tweet.text = text;
     }
-    return tweet;
+    return getTweetById(tweet.tid);
 }
 
 export async function deleteTweet(id) {
