@@ -5,7 +5,7 @@ export default class HttpClient {
 
     // 이름자체가 fetch인 사용자함수
     async fetch(url, options) {
-        // api함수 fetch
+        // api함수 fetch    
         const res = await fetch(`${this.baseURL}${url}`, {
             ...options, // 기존에 있는 옵션을 추가
             headers: {
@@ -13,10 +13,12 @@ export default class HttpClient {
                 ...options.headers
             },
         });
+        console.log(res);
+        console.log('json data', await res.clone().json());
 
         let data;
         try {
-            data = await res.json();
+            data = await res.clone().json();
         } catch (error) {
             console.error(error);
         }
