@@ -8,17 +8,19 @@ let users = [{
 }];
 
 export async function findUserByUsername(username) {
-    return users.find(user => user.username = username);
+    const found = users.find(user => user.username === username);
+    console.log("data findUserByUsername - ", found);
+    return users.find(user => user.username === username);
 }
 
 export async function findUserById(id) {
-    return users.find(user => user.uid = id);
+    return users.find(user => user.uid === id);
 }
 
 export async function createUser(user) {
     const newUser = {
         ...user,
-        uid: users.length + 1, // new Date().toString()
+        uid: user.length + 1//new Date().toString()
     }
     users.push(newUser);
 
