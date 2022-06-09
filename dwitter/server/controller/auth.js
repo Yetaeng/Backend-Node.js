@@ -22,7 +22,6 @@ export async function register(req, res) {
     }
 
     const hashed = await bcrypt.hash(password, bcryptSalt);
-    console.log(hashed);
     const newUserId = await userRepository.createUser({username, password: hashed, name, email, url});
     const newUserToken = createJwtToken(newUserId);
 

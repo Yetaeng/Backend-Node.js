@@ -13,12 +13,10 @@ export default class HttpClient {
                 ...options.headers
             },
         });
-        console.log(res);
-        console.log('json data', await res.clone().json());
 
         let data;
         try {
-            data = await res.clone().json();
+            data = await res.json();
         } catch (error) {
             console.error(error);
         }
