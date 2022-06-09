@@ -18,8 +18,8 @@ export default class TweetService {
       headers: this.getHeaders(),
       body: JSON.stringify({
         text,
-        username: 'ellie',
-        name: 'Ellie',
+        username: 'yetaeng',
+        name: 'Yetaeng',
       }),
     });
   }

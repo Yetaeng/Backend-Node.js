@@ -2,9 +2,9 @@ import * as userRepository from './auth.js'
 
 let tweets = [{
         tid: '1',
-        uid: '1',
         text: "yetaeng's tweet",
         createdAT: new Date(),
+        uid: '1',
     }
 ]
 
@@ -15,9 +15,9 @@ export async function getAllTweets() {
     }))
 }
 
-export async function getAllTweetsByUsername(name) {
+export async function getAllTweetsByUsername(username) {
     return getAllTweets()
-    .then((tweets) => tweets.filter(tweet => tweet.name === name));
+    .then((tweets) => tweets.filter(tweet => tweet.username === username));
 }
 
 export async function getTweetById(id) {
@@ -32,10 +32,10 @@ export async function getTweetById(id) {
 
 export async function createTweet(uid, text) {
     const tweet = {
-        tid: tweets.length + 1,
-        uid: uid,
-        text: text,
+        tid: (tweets.length+1).toString(),
+        text,
         createdAT: new Date(),
+        uid,
     }
     tweets = [tweet, ...tweets];
 

@@ -16,9 +16,9 @@ const validateTweet =
 router.get('/',isAuth, tweetController.getAllTweets);
 
 // get tweet by id
-router.get('/:id', 
+router.get('/:tid', 
     [
-        param('id').isInt().withMessage('숫자를 입력해주세요'),
+        param('tid').isInt().withMessage('숫자를 입력해주세요'),
         validate
     ], isAuth, tweetController.getTweetById);
 
@@ -26,9 +26,9 @@ router.get('/:id',
 router.post('/', isAuth, validateTweet, tweetController.createTweet);
 
 // update tweet
-router.put('/:id', isAuth, validateTweet, tweetController.updateTweet);    
+router.put('/:tid', isAuth, validateTweet, tweetController.updateTweet);    
 
 // delete tweet
-router.delete('/:id', isAuth, validate, tweetController.deleteTweet);
+router.delete('/:tid', isAuth, validate, tweetController.deleteTweet);
 
 export default router;

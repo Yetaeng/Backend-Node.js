@@ -5,7 +5,7 @@ import EditTweetForm from './EditTweetForm';
 
 const TweetCard = memo(
   ({ tweet, owner, onDelete, onUpdate, onUsernameClick }) => {
-    const { id, username, name, url, text, createdAt } = tweet;
+    const { tid, username, name, url, text, createdAt } = tweet;
     const [editing, setEditing] = useState(false);
     const onClose = () => setEditing(false);
 
@@ -34,7 +34,7 @@ const TweetCard = memo(
         </section>
         {owner && (
           <div className='tweet-action'>
-            <button className='tweet-action-btn' onClick={() => onDelete(id)}>
+            <button className='tweet-action-btn' onClick={() => onDelete(tid)}>
               x
             </button>
             <button

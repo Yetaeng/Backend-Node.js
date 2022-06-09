@@ -5,7 +5,7 @@ const EditTweetForm = ({ tweet, onUpdate, onClose }) => {
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    onUpdate(tweet.id, text);
+    onUpdate(tweet.tid, text);
     onClose();
   };
 
