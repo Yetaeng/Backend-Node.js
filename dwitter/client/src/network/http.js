@@ -15,6 +15,12 @@ export default class HttpClient {
         });
 
         let data;
+
+        if (res.status === 204) {
+            data = await res.text();
+            return data;
+        }
+
         try {
             data = await res.json();
         } catch (error) {
