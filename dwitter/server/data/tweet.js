@@ -53,5 +53,5 @@ export async function updateTweet(id, text) {
 }
 
 export async function deleteTweet(id) {
-    return tweets.filter(tweet => tweet.tid !== id);
+    tweets = tweets.filter(tweet => tweet.tid !== id);
 }
