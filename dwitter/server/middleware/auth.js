@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import * as userRepository from '../data/auth.js';
+import { config } from '../config.js';
 
-const jwtSecretKey = 'aZqd4ywpfX*&';
 const authErrorMsg = { message: "유효하지 않은 토큰입니다." };
 
 export const isAuth = async (req, res, next) => {
@@ -11,7 +11,7 @@ export const isAuth = async (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1]; // 공백으로 구분하면 굳이 'Bearer '까지 안해도됨!
-    jwt.verify(token, jwtSecretKey, async (error, decoded) => {
+    jwt.verify(token, config.jwt.secretKey, async (error, decoded) => {
         if (error) {
             return res.status(401).json(authErrorMsg);
         } else {
