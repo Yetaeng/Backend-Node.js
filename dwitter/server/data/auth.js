@@ -1,26 +1,30 @@
-import { connectDB } from '../db/database.js';
-
-const database = await connectDB("dwitter");
-const users = database.collection("users");
+import MongoDb from 'mongodb';
+import { getUsers } from '../db/database.js';
 
 export async function findUserByUsername(username) {
-    const query = { username: username };
-    
-    return await users.findOne(query);
+    return getUsers()
+        .findOne({ username })
+        .then((data) => {
+            return MapOptionalUser(data);
+        });
 }
 
 export async function findUserById(id) {
-    const query = { uid: id };
-
-    return await users.findOne(query);
+    return getUsers()
+        .findOne({ _id: new MongoDb.ObjectId(id) })
+        .then((data) => {
+            return MapOptionalUser(data);
+        });
 }
 
 export async function createUser(user) {
-    const newDoc = {
-        ...user,
-        uid: Date.now().toString(),
-    }
-    await users.insertOne(newDoc);
+    return getUsers()
+        .insertOne(user)
+        .then((data) => {
+            return data.insertedId.toString();
+        })
+}
 
-    return newDoc.uid;
+function MapOptionalUser(user) {
+    return user ? { ...user, uid: user._id } : null;
 }
