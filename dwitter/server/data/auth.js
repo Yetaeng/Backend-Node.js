@@ -1,26 +1,26 @@
-let users = [{
-    uid: '1',
-    username: 'yetaeng',
-    password: '$2b$10$3zjoINsvis56SvB.GfgMTemSiJDXHVbtSvdMXNceZ16LEdiRZQXmy',
-    name: 'Yetaeng',
-    email: 'yetaeng20@gmail.com',
-    url: ''
-}];
+import { connectDB } from '../db/database.js';
+
+const database = await connectDB("dwitter");
+const users = database.collection("users");
 
 export async function findUserByUsername(username) {
-    return users.find(user => user.username === username);
+    const query = { username: username };
+    
+    return await users.findOne(query);
 }
 
 export async function findUserById(id) {
-    return users.find(user => user.uid === id);
+    const query = { uid: id };
+
+    return await users.findOne(query);
 }
 
 export async function createUser(user) {
-    const newUser = {
+    const newDoc = {
         ...user,
-        uid: users.length + 1 // new Date().toString()
+        uid: Date.now().toString(),
     }
-    users.push(newUser);
+    await users.insertOne(newDoc);
 
-    return newUser.uid;
+    return newDoc.uid;
 }
