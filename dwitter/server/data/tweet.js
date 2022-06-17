@@ -1,57 +1,55 @@
+import MongoDb from 'mongodb';
 import * as userRepository from './auth.js'
-
-let tweets = [{
-        tid: '1',
-        text: "yetaeng's tweet",
-        createdAT: new Date(),
-        uid: '1',
-    }
-]
+import { getTweets } from '../db/database.js';
 
 export async function getAllTweets() {
-    return Promise.all(tweets.map(async (tweet) => {
-        const { username, name, url } = await userRepository.findUserById(tweet.uid);
-        return {...tweet, username, name, url}
-    }))
+    // FAIL: find()
 }
 
 export async function getAllTweetsByUsername(username) {
-    return getAllTweets()
-    .then((tweets) => tweets.filter(tweet => tweet.username === username));
+    // FAIL: find()
 }
 
 export async function getTweetById(id) {
-    const found = tweets.find(tweet => tweet.tid === id);
-    if (!found) {
-        return null;
-    }
-    const { username, name, url } = await userRepository.findUserById(found.uid);
-
-    return {...found, username, name, url}
+    return getTweets()
+        .findOne({ _id: new MongoDb.ObjectId(id) })
+        .then((data) => {
+            return data;
+        })
 }
 
 export async function createTweet(uid, text) {
-    const tweet = {
-        tid: (tweets.length+1).toString(),
-        text,
-        createdAT: new Date(),
-        uid,
-    }
-    tweets = [tweet, ...tweets];
+    const { username, url } = await userRepository.findUserById(uid);
 
-    return getTweetById(tweet.tid);
+    return getTweets()
+        .insertOne({ text, createdAt: new Date(), uid, username, url  })
+        .then((data) => {
+            const tweet = {
+                tid: data.insertedId.toString(),
+                text,
+                createdAt: new Date(),
+                uid,
+                username,
+                url,
+            }
+
+            return tweet;
+        })
 }
 
 export async function updateTweet(id, text) {
-    const tweet = tweets.find(tweet => tweet.tid === id);
-
-    // tweet이 없을수도 있으니까 처리해줌
-    if (tweet) {
-        tweet.text = text;
-    }
-    return getTweetById(tweet.tid);
+    return getTweets()
+        .updateOne({ _id: new MongoDb.ObjectId(id) }, {$set: { text }}, { upsert: false })
+        .then((data) => {
+            // 트윗을 리턴
+            return data;
+        })
 }
 
 export async function deleteTweet(id) {
-    tweets = tweets.filter(tweet => tweet.tid !== id);
+    return getTweets()
+        .deleteOne({ _id: new MongoDb.ObjectId(id) })
+        .then((data) => {
+            return data;
+        })
 }
