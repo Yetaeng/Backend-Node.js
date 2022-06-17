@@ -3,11 +3,23 @@ import * as userRepository from './auth.js'
 import { getTweets } from '../db/database.js';
 
 export async function getAllTweets() {
-    // FAIL: find()
+    return getTweets()
+        .find()
+        .sort({ createdAt: -1 })
+        .toArray()
+        .then((data) => {
+            return data;
+        })
 }
 
 export async function getAllTweetsByUsername(username) {
-    // FAIL: find()
+    return getTweets()
+        .find({username})
+        .sort({ createdAt: -1 })
+        .toArray()
+        .then((data) => {
+            return data;
+        })
 }
 
 export async function getTweetById(id) {
