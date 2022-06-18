@@ -30,7 +30,7 @@ export async function updateTweet(req, res) {
         return res.sendStatus(404);
     }
 
-    if (tweet.uid.toString() !== req.uid.toString()) {
+    if (tweet.uid !== req.uid) {
         return res.status(403).send('It was not your tweet.');
     }
 
@@ -46,7 +46,7 @@ export async function deleteTweet(req, res) {
         return res.sendStatus(404);
     }
 
-    if (tweet.uid.toString() !== req.uid.toString()) {
+    if (tweet.uid !== req.uid) {
         return res.status(403).send('It was not your tweet.');
     }
 

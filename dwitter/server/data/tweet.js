@@ -7,9 +7,7 @@ export async function getAllTweets() {
         .find()
         .sort({ createdAt: -1 })
         .toArray()
-        .then((data) => {
-            return data;
-        })
+        .then(mapTweets);
 }
 
 export async function getAllTweetsByUsername(username) {
@@ -17,51 +15,47 @@ export async function getAllTweetsByUsername(username) {
         .find({username})
         .sort({ createdAt: -1 })
         .toArray()
-        .then((data) => {
-            return data;
-        })
+        .then(mapTweets);
 }
 
 export async function getTweetById(id) {
     return getTweets()
         .findOne({ _id: new MongoDb.ObjectId(id) })
-        .then((data) => {
-            return data;
-        })
+        .then(mapOptionalTweet);
 }
 
 export async function createTweet(uid, text) {
-    const { username, url } = await userRepository.findUserById(uid);
+    const { username, name, url } = await userRepository.findUserById(uid);
+    const tweet = {
+        text,
+        createdAt: new Date(),
+        uid,
+        username,
+        name,
+        url
+    }
 
     return getTweets()
-        .insertOne({ text, createdAt: new Date(), uid, username, url  })
-        .then((data) => {
-            const tweet = {
-                tid: data.insertedId.toString(),
-                text,
-                createdAt: new Date(),
-                uid,
-                username,
-                url,
-            }
-
-            return tweet;
-        })
+        .insertOne(tweet) // mongodb에 넣는 트윗에는 tid를 만들어주지 않아도 됨
+        .then((data) => mapOptionalTweet({ ...tweet, _id: data.insertedId }))
 }
 
 export async function updateTweet(id, text) {
     return getTweets()
-        .updateOne({ _id: new MongoDb.ObjectId(id) }, {$set: { text }}, { upsert: false })
-        .then((data) => {
-            // 트윗을 리턴
-            return data;
-        })
+        .findOneAndUpdate({ _id: new MongoDb.ObjectId(id) }, {$set: { text }}, { returnDocument: 'after' })
+        .then((result) => result.value)
+        .then(mapOptionalTweet);
 }
 
 export async function deleteTweet(id) {
     return getTweets()
-        .deleteOne({ _id: new MongoDb.ObjectId(id) })
-        .then((data) => {
-            return data;
-        })
+        .deleteOne({ _id: new MongoDb.ObjectId(id) });
+}
+
+function mapOptionalTweet(tweet) {
+    return tweet ? { ...tweet, tid: tweet._id.toString() } : tweet;
+}
+
+function mapTweets(tweets) {
+    return tweets.map(mapOptionalTweet);
 }
