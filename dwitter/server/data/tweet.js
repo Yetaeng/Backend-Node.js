@@ -1,57 +1,44 @@
+import { mongoose } from 'mongoose';
+import { useVirtualId } from '../db/database.js';
 import * as userRepository from './auth.js'
 
-let tweets = [{
-        tid: '1',
-        text: "yetaeng's tweet",
-        createdAT: new Date(),
-        uid: '1',
-    }
-]
+const tweetSchema = new mongoose.Schema(
+    {
+        text: { type: String, required: true },
+        uid: { type: String, required: true },
+        username: { type: String, required: true },
+        name: { type: String, required: true },
+        url: String,
+    },
+    { timestamps: true},
+);
+
+useVirtualId(tweetSchema, 'tid');
+const Tweet = mongoose.model('Tweet', tweetSchema);
 
 export async function getAllTweets() {
-    return Promise.all(tweets.map(async (tweet) => {
-        const { username, name, url } = await userRepository.findUserById(tweet.uid);
-        return {...tweet, username, name, url}
-    }))
+    return Tweet.find().sort({ createdAt: -1 });
 }
 
 export async function getAllTweetsByUsername(username) {
-    return getAllTweets()
-    .then((tweets) => tweets.filter(tweet => tweet.username === username));
+    return Tweet.find({ username }).sort({ createdAt: -1 });
 }
 
 export async function getTweetById(id) {
-    const found = tweets.find(tweet => tweet.tid === id);
-    if (!found) {
-        return null;
-    }
-    const { username, name, url } = await userRepository.findUserById(found.uid);
-
-    return {...found, username, name, url}
+    return Tweet.findById(id);
 }
 
 export async function createTweet(uid, text) {
-    const tweet = {
-        tid: (tweets.length+1).toString(),
-        text,
-        createdAT: new Date(),
-        uid,
-    }
-    tweets = [tweet, ...tweets];
-
-    return getTweetById(tweet.tid);
+    return userRepository.findUserById(uid)
+        .then((user) => {
+            new Tweet({ text, uid, username: user.username, name: user.name }).save()
+        });
 }
 
 export async function updateTweet(id, text) {
-    const tweet = tweets.find(tweet => tweet.tid === id);
-
-    // tweet이 없을수도 있으니까 처리해줌
-    if (tweet) {
-        tweet.text = text;
-    }
-    return getTweetById(tweet.tid);
+    return Tweet.findByIdAndUpdate(id, { text }, { returnOriginal: false });
 }
 
 export async function deleteTweet(id) {
-    tweets = tweets.filter(tweet => tweet.tid !== id);
+    return Tweet.findByIdAndDelete(id);
 }

@@ -1,26 +1,27 @@
-let users = [{
-    uid: '1',
-    username: 'yetaeng',
-    password: '$2b$10$3zjoINsvis56SvB.GfgMTemSiJDXHVbtSvdMXNceZ16LEdiRZQXmy',
-    name: 'Yetaeng',
-    email: 'yetaeng20@gmail.com',
-    url: ''
-}];
+import { mongoose } from 'mongoose';
+import { useVirtualId } from '../db/database.js';
+
+const userSchema = new mongoose.Schema({
+    username: { type: String, required: true },
+    password: { type: String, required: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    url: String 
+});
+
+useVirtualId(userSchema, 'uid');
+const User = mongoose.model('User', userSchema);
 
 export async function findUserByUsername(username) {
-    return users.find(user => user.username === username);
+    return User.findOne({ username });
 }
 
-export async function findUserById(id) {
-    return users.find(user => user.uid === id);
+export async function findUserById(uid) {
+    return User.findById(uid);
 }
 
 export async function createUser(user) {
-    const newUser = {
-        ...user,
-        uid: users.length + 1 // new Date().toString()
-    }
-    users.push(newUser);
-
-    return newUser.uid;
+    return new User(user).save().then((data) => {
+        data._id;
+    });
 }

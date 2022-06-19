@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import tweetRouter from './router/tweets.js'
 import authRouter from './router/auth.js';
 import { config } from './config.js';
+import { connectDB } from './db/database.js';
 
 const app = express();
 
@@ -29,4 +30,9 @@ app.get('/', (error, req, res) => {
     res.sendStatus(500);
 })
 
-app.listen(config.host.port);
+connectDB()
+    .then(() => {
+        console.log('mongoose connected!');
+        app.listen(config.host.port);
+    })
+    .catch(console.error)
